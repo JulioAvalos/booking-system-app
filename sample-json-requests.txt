@@ -1,0 +1,19 @@
+{
+    statusCode: 200,
+    message: "OK",
+    data: [
+        {
+            name: "Juan"
+        }
+    ]
+}
+
+{
+    statusCode: 400,
+    message: "Bad ruquest",
+    errors: [
+        "Error in param request 1",
+        "Error in param request 2",
+        "Error in param request 3"
+    ]
+}
