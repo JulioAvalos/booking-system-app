@@ -14,7 +14,7 @@ export function Loading() {
                 gap: 2
             }}
         >
-            <Typography variant="h3" sx={{fontFamily: `"consolas", "Inconsolata"`}} gutterBottom>
+            <Typography variant="h3" gutterBottom>
                 Espere un momento...
             </Typography>
             <CircularProgress size={100}/>
