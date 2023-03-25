@@ -1,23 +1,23 @@
 import React from "react";
 import {BrowserRouter as Router, Navigate, Route, Routes} from "react-router-dom";
 import Navbar from "../components/layout/Navbar";
-import Footer from "../components/layout/Footer";
 import Login from "../pages/Login";
-import Booking from "../pages/Booking";
+import MainPage from "../pages/MainPage";
 import {Box} from "@mui/material";
+import BookingRoom from "../pages/BookingRoom";
 
 function Navigator() {
     return (
         <Router>
             <Navbar/>
-            <Box sx={{height: '85vh'}}>
+            <Box>
                 <Routes>
                     <Route path="login" element={<Login/>}/>
-                    <Route path="booking" element={<Booking/>}/>
+                    <Route path="booking" element={<MainPage/>}/>
+                    <Route path="booking/room" element={<BookingRoom/>}/>
                     <Route path='/*' element={<Navigate to='/login' replace/>}/>
                 </Routes>
             </Box>
-            <Footer/>
         </Router>
     );
 }

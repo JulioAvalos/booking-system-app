@@ -17,6 +17,7 @@ export const AuthProvider = ({children}: IProps) => {
     const [state, dispatch] = useReducer(authReducer, initialState);
     const login = async (username: string, password: string) => {
         console.log('values', username, password);
+        //todo: refactorizar llamada
         const userData = {
             username: username,
             firstName: 'Julio',
