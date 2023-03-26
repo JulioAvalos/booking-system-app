@@ -1,7 +1,8 @@
 import {ReactNode, useReducer} from "react";
 import {AuthContext} from "./AuthContext";
 import {Actions, authReducer} from "./authReducer";
-import {randomColorAvatar} from "../utils/util";
+import {getParsedJwt, randomColorAvatar} from "../utils/util";
+import {loginUser} from "../api/services/login";
 
 export interface IProps {
     children: ReactNode;
@@ -15,21 +16,30 @@ const initialState = {
 
 export const AuthProvider = ({children}: IProps) => {
     const [state, dispatch] = useReducer(authReducer, initialState);
-    const login = async (username: string, password: string) => {
-        console.log('values', username, password);
-        //todo: refactorizar llamada
-        const userData = {
-            username: username,
-            firstName: 'Julio',
-            lastName: 'Avalos',
-            role: 'user',
-            area: 'FABRICA DIGITAL - TRANSFORMACION DIGITAL',
-            email: 'julio.avalos@bancocuscatlan.com',
-            color: randomColorAvatar()
+    const login = async (email: string, password: string) => {
+        try {
+            const resp = await loginUser(email, password);
+            const token = getParsedJwt(resp.data.data);
+            localStorage.setItem('access_token', JSON.stringify(token));
+            dispatch({type: Actions.AUTH_LOGIN, payload: {...token}});
+            return true;
+        } catch (err) {
+            return false;
         }
-        localStorage.setItem('access_token', JSON.stringify({...userData}));
-        dispatch({type: Actions.AUTH_LOGIN, payload: {...userData}});
-        return true;
+        // console.log('values', username, password);
+        // //todo: refactorizar llamada
+        // const userData = {
+        //     username: username,
+        //     firstName: 'Julio',
+        //     lastName: 'Avalos',
+        //     role: 'user',
+        //     area: 'FABRICA DIGITAL - TRANSFORMACION DIGITAL',
+        //     email: 'julio.avalos@bancocuscatlan.com',
+        //     color: randomColorAvatar()
+        // }
+        // localStorage.setItem('access_token', JSON.stringify({...userData}));
+        // dispatch({type: Actions.AUTH_LOGIN, payload: {...userData}});
+        // return true;
     }
 
     const verifyLogin = () => {

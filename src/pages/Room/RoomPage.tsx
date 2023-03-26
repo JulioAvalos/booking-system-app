@@ -8,7 +8,7 @@ import {
     TextField,
     Typography
 } from "@mui/material";
-
+import {Link as RouterLink, useNavigate} from "react-router-dom";
 import {AiOutlinePlus} from "react-icons/ai";
 import {FaFilter, FaSearch} from "react-icons/all";
 import RoomTable from "./RoomTable";
@@ -52,7 +52,7 @@ const statusList = [
     },
 ]
 
-export default function Index() {
+export default function RoomPage() {
 
     // filtros: buscar por nombre, activos, inactivos, nivel, paginacion,
 
@@ -67,9 +67,10 @@ export default function Index() {
                 <Grid item xs={2}>
                     <Button
                         fullWidth
-                        type="submit"
                         variant="outlined"
                         color="primary"
+                        component={RouterLink}
+                        to="/room/create"
                         sx={{fontWeight: 600}}
                         startIcon={<AiOutlinePlus color="#01426A"/>}
                     >

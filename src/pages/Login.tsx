@@ -1,4 +1,4 @@
-import {useContext, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {Box, Button, Container, Grid, IconButton, InputAdornment, TextField, Typography} from "@mui/material";
 import {Formik, Form, Field} from 'formik';
@@ -16,10 +16,18 @@ const LoginSchemaValidation = Yup.object().shape({
 function Login() {
 
     const navigate = useNavigate();
-    const {login, displayModal} = useContext(AuthContext);
+    const {login, displayModal, verifyLogin} = useContext(AuthContext);
 
     const [showPassword, setShowPassword] = useState(false);
     const handleClickShowPassword = () => setShowPassword((show) => !show);
+
+    useEffect(() => {
+        const isLogged = verifyLogin();
+        if (isLogged) {
+            navigate('/booking');
+        }
+    }, [navigate, verifyLogin]);
+
 
     const handleSubmitLogin = async (values: any) => {
         console.log('values: ', values);

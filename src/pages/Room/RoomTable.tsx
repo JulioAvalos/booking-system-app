@@ -11,6 +11,7 @@ import {
     TableRow
 } from "@mui/material";
 import {FaEdit, FaTrashAlt} from "react-icons/all";
+import {Link as RouterLink} from "react-router-dom";
 
 function createData(
     name: string,
@@ -51,7 +52,7 @@ const roomList = [
 
 export default function RoomTable() {
 
-    const handleChangePage = () => {
+    const handleChangePage = (event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null, page: number) => {
 
     }
 
@@ -59,14 +60,16 @@ export default function RoomTable() {
 
     }
 
-    const handleChangeRowsPerPage = () => {}
+    const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+
+    }
 
     return (
         <>
             <TableContainer component={Paper}>
                 <Table sx={{minWidth: 650}} aria-label="simple table">
                     <TableHead>
-                        <TableRow >
+                        <TableRow>
                             <TableCell sx={{color: '#9FA2B4'}}>#</TableCell>
                             <TableCell align="right" sx={{color: '#9FA2B4'}}>Nombre</TableCell>
                             <TableCell align="right" sx={{color: '#9FA2B4'}}>Nivel</TableCell>
@@ -91,13 +94,12 @@ export default function RoomTable() {
                                 <TableCell align="right">
                                     <Grid container spacing={1} justifyContent="end">
                                         <Grid item>
-                                            <IconButton size="small">
+                                            <IconButton
+                                                size="small"
+                                                component={RouterLink}
+                                                to={`/room/${row.id}`}
+                                            >
                                                 <FaEdit color="#01426A"/>
-                                            </IconButton>
-                                        </Grid>
-                                        <Grid item>
-                                            <IconButton size="small">
-                                                <FaTrashAlt color="#01426A"/>
                                             </IconButton>
                                         </Grid>
                                     </Grid>
@@ -116,7 +118,7 @@ export default function RoomTable() {
                 onRowsPerPageChange={handleChangeRowsPerPage}
                 labelRowsPerPage="Filas por página"
                 labelDisplayedRows={
-                    ({ from, to, count }) => {
+                    ({from, to, count}) => {
                         return '' + from + '-' + to + ' de ' + count
                     }
                 }

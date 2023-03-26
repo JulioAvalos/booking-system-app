@@ -5,7 +5,8 @@ import Login from "../pages/Login";
 import MainPage from "../pages/MainPage";
 import {Box} from "@mui/material";
 import BookingRoom from "../pages/BookingRoom";
-import Index from "../pages/Room";
+import RoomPage from "../pages/Room/RoomPage";
+import RoomForm from "../pages/Room/RoomForm";
 
 function Navigator() {
     return (
@@ -16,7 +17,9 @@ function Navigator() {
                     <Route path="login" element={<Login/>}/>
                     <Route path="booking" element={<MainPage/>}/>
                     <Route path="booking/room" element={<BookingRoom/>}/>
-                    <Route path="room" element={<Index/>}/>
+                    <Route path="room" element={<RoomPage/>}/>
+                    <Route path="room/create" element={<RoomForm/>}/>
+                    <Route path="room/:id" element={<RoomForm/>}/>
                     <Route path='/*' element={<Navigate to='/login' replace/>}/>
                 </Routes>
             </Box>
