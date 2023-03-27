@@ -1,4 +1,4 @@
-import {Box, Card, CardContent, Typography} from "@mui/material";
+import {Box, Button, Card, CardContent, CircularProgress, Typography} from "@mui/material";
 import {FaRegCheckCircle} from "react-icons/fa";
 import {IoMdCloseCircleOutline} from "react-icons/io";
 import {ImClock} from "react-icons/im";
@@ -6,8 +6,12 @@ import {
     parseDateTimeToStringTime,
     parseDateToString,
 } from "../utils/util";
+import {cancelBooking} from "../api/services/booking";
+import {useContext, useState} from "react";
+import {AuthContext} from "../context/AuthContext";
 
 interface IBookingListProps {
+    id: number;
     dayMonth: string;
     startTime: string;
     endTime: string;
@@ -15,7 +19,16 @@ interface IBookingListProps {
     status: string;
 }
 
-export default function BookingList({dayMonth, startTime, endTime, roomName, status}: IBookingListProps) {
+export default function BookingList({id, dayMonth, startTime, endTime, roomName, status}: IBookingListProps) {
+
+    const {displayModal} = useContext(AuthContext);
+    const [loading, setLoading] = useState(false);
+    const handleCancelBooking = async (id: number) => {
+        setLoading(true);
+        const resp = await cancelBooking(id);
+        setLoading(false);
+        displayModal('Se ha cancelado la reserva');
+    }
 
     return (
         <Card
@@ -68,6 +81,21 @@ export default function BookingList({dayMonth, startTime, endTime, roomName, sta
                             {roomName}
                         </Typography>
                     </Box>
+                    {(status && status === 'PENDING') && (<Box>
+                        <Button
+                            variant="contained"
+                            color="secondary"
+                            sx={{fontWeight: 700}}
+                            onClick={() => {
+                                handleCancelBooking(id);
+                            }}
+                            disabled={loading}
+                            startIcon={loading ? <CircularProgress color="primary" size={15}/> : ''}
+                        >
+                            Cancelar
+                        </Button>
+                    </Box>)}
+
                 </Box>
             </CardContent>
         </Card>

@@ -80,19 +80,16 @@ export default function RoomForm() {
 
     const handleSubmit = (values: any) => {
         setLoading(true);
-        console.log('submit', values);
-        console.log(JSON.stringify(values));
-
-        const formData = {
+        let formData: any = {
             name: values.name,
             levelId: values.level.id,
             capacity: values.capacity,
-            status: values.status.value,
             photoUrl: values.photoUrl,
             createdBy: user.username
         }
 
         if (id) {
+            formData.status = values.status.value;
             updateRoom(Number(id), formData).then((resp) => {
                 setLoading(false);
                 displayModal('Se ha actualizado la sala');
@@ -156,8 +153,6 @@ export default function RoomForm() {
                       touched,
                       setFieldValue
                   }) => {
-                    console.log(values);
-                    console.log(errors);
                     return (
                         <Form>
                             <Grid container spacing={2} sx={{mt: 2}}>
@@ -242,38 +237,40 @@ export default function RoomForm() {
                                         }}
                                     />
                                 </Grid>
-                                <Grid item xs={6}>
-                                    <Autocomplete
-                                        options={statusList}
-                                        onChange={(event, value) => {
-                                            setFieldValue('status', value);
-                                        }}
-                                        value={values.status}
-                                        isOptionEqualToValue={(option, value) => option.id === value.id}
-                                        getOptionLabel={(option) => option.name || ''}
-                                        renderInput={(params) => {
-                                            return (
-                                                <TextField
-                                                    {...params}
-                                                    fullWidth
-                                                    label="Estado"
-                                                    id="status"
-                                                    name="status"
-                                                    variant="outlined"
-                                                    error={Boolean(errors.status && touched.status)}
-                                                    helperText={
-                                                        errors.status as string && touched.status as string
-                                                            ? errors.status as string : ''
-                                                    }
-                                                    InputLabelProps={{
-                                                        shrink: true,
-                                                    }}
-                                                />
-                                            );
-                                        }}
-                                    />
-                                </Grid>
-                                <Grid item xs={6}>
+                                {id && (
+                                    <Grid item xs={6}>
+                                        <Autocomplete
+                                            options={statusList}
+                                            onChange={(event, value) => {
+                                                setFieldValue('status', value);
+                                            }}
+                                            value={values.status}
+                                            isOptionEqualToValue={(option, value) => option.id === value.id}
+                                            getOptionLabel={(option) => option.name || ''}
+                                            renderInput={(params) => {
+                                                return (
+                                                    <TextField
+                                                        {...params}
+                                                        fullWidth
+                                                        label="Estado"
+                                                        id="status"
+                                                        name="status"
+                                                        variant="outlined"
+                                                        error={Boolean(errors.status && touched.status)}
+                                                        helperText={
+                                                            errors.status as string && touched.status as string
+                                                                ? errors.status as string : ''
+                                                        }
+                                                        InputLabelProps={{
+                                                            shrink: true,
+                                                        }}
+                                                    />
+                                                );
+                                            }}
+                                        />
+                                    </Grid>
+                                )}
+                                <Grid item xs={id ? 6 : 12}>
                                     <Field
                                         fullWidth
                                         label="Foto de sala (Opcional)"

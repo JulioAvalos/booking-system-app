@@ -78,6 +78,35 @@ export const roomList = [
     }
 ];
 
+/*
+*APPROVED
+* PENDING
+REJECTED
+CANCELED
+* */
+export const bookingStatusList = [
+    {
+        id: 1,
+        name: 'Aprobado',
+        value: 'APPROVED'
+    },
+    {
+        id: 2,
+        name: 'Pendiente',
+        value: 'PENDING'
+    },
+    {
+        id: 3,
+        name: 'Rechazado',
+        value: 'REJECTED'
+    },
+    {
+        id: 4,
+        name: 'Cancelado',
+        value: 'CANCELED'
+    },
+];
+
 export const statusList = [
     {
         id: 1,

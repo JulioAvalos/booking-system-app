@@ -29,7 +29,6 @@ function Login() {
     }, []);
 
     const handleSubmitLogin = async (values: any) => {
-        console.log('values: ', values);
         const response = await login(values.username, values.password);
         if (response) {
             navigate('/booking');

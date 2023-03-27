@@ -17,6 +17,7 @@ import {TimePicker} from "@mui/x-date-pickers";
 import {useContext, useEffect, useState} from "react";
 import {AuthContext} from "../../context/AuthContext";
 import {levelList, roomList} from "../../utils/sampleData";
+import {createBooking} from "../../api/services/booking";
 
 const BookingSchemaValidation = Yup.object().shape({
     bookingDate: Yup.date().required('Ingrese la fecha'),
@@ -56,26 +57,33 @@ export default function BookingRoom() {
     }, []);
 
     const lookUpRoomsByLevel = (level: any) => {
-        console.log('level', level);
+        
     }
 
     const handleSubmit = (values: any) => {
         setLoading(true);
-        const {room, ...rest} = values;
+        const {room, level, bookingDate, ...rest} = values;
 
         const formData = {
             ...rest,
+            reservationDate: values.bookingDate,
             roomId: values.room.id,
             userId: 1,
+            attendees: 1,
+            recurring: false,
+            status: 'PENDING'
         }
 
-        console.log('submit',formData);
+        
 
-        setTimeout(() => {
-            displayModal('Se ha creado la reserva de sala');
+        createBooking(formData).then(() => {
             setLoading(false);
+            displayModal('Se ha creado la reserva de sala');
             navigate('/booking');
-        }, 2000);
+        }).catch(err => {
+            setLoading(false);
+            displayModal('Error: no se pudo hacer la reserva');
+        });
 
     }
 
@@ -123,8 +131,8 @@ export default function BookingRoom() {
                       touched,
                       setFieldValue
                   }) => {
-                    console.log(errors)
-                    console.log(values);
+                    
+
                     return (
                         <Form>
                             <Grid container sx={{mt: 2}} spacing={3}>
