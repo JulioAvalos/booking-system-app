@@ -14,8 +14,9 @@ import {Field, Form, Formik} from "formik";
 import * as Yup from "yup";
 import {useContext, useEffect, useState} from "react";
 import {AuthContext} from "../../context/AuthContext";
-import {levelList, statusList, updateRoomSample} from "../../utils/sampleData";
-import {IRoomForm, Level} from "../../interfaces";
+import {levelList, statusList} from "../../utils/sampleData";
+import {Level} from "../../interfaces";
+import {createRoom, getRoomById, updateRoom} from "../../api/services/room";
 
 const RoomFormSchemaValidation = Yup.object().shape({
     name: Yup.string().required('Ingrese el nombre'),
@@ -49,7 +50,7 @@ export default function RoomForm() {
 
     const {id} = useParams();
     const navigate = useNavigate();
-    const {verifyLogin, displayModal} = useContext(AuthContext);
+    const {verifyLogin, displayModal, user} = useContext(AuthContext);
     const [loading, setLoading] = useState(false);
     const [roomDetail, setRoomDetail] = useState(initialValues);
 
@@ -63,9 +64,17 @@ export default function RoomForm() {
     }, []);
 
     useEffect(() => {
-        console.log('id', id);
         if (id) {
-            setRoomDetail(updateRoomSample);
+            getRoomById(Number(id)).then((resp) => {
+
+                const detail = {
+                    ...resp.data.data.items
+                }
+
+                setRoomDetail(resp.data.data.items);
+            }).catch((err) => {
+                displayModal('Error: no se pudo obtener informacion de la sala');
+            });
         }
     }, [id]);
 
@@ -73,17 +82,34 @@ export default function RoomForm() {
         setLoading(true);
         console.log('submit', values);
         console.log(JSON.stringify(values));
-        setTimeout(() => {
-            if (id) {
-                //todo: update
+
+        const formData = {
+            name: values.name,
+            levelId: values.level.id,
+            capacity: values.capacity,
+            status: values.status.value,
+            photoUrl: values.photoUrl,
+            createdBy: user.username
+        }
+
+        if (id) {
+            updateRoom(Number(id), formData).then((resp) => {
+                setLoading(false);
                 displayModal('Se ha actualizado la sala');
-            } else {
-                //todo: create
-                navigate('/room');
+            }).catch((err) => {
+                setLoading(false);
+                displayModal('Error: no se pudo actualizar la sala');
+            })
+        } else {
+            createRoom(formData).then((resp) => {
+                setLoading(false);
                 displayModal('Se ha creado la sala');
-            }
-            setLoading(false);
-        }, 2000);
+                navigate('/room');
+            }).catch((err) => {
+                setLoading(false);
+                displayModal('Error: no se pudo crear la sala');
+            });
+        }
     }
 
     return (
@@ -130,7 +156,7 @@ export default function RoomForm() {
                       touched,
                       setFieldValue
                   }) => {
-                    console.log(values.level);
+                    console.log(values);
                     console.log(errors);
                     return (
                         <Form>
@@ -254,6 +280,7 @@ export default function RoomForm() {
                                         id="photoUrl"
                                         name="photoUrl"
                                         variant="outlined"
+                                        value={values.photoUrl}
                                         error={errors.photoUrl && touched.photoUrl}
                                         helperText={
                                             errors.photoUrl && touched.photoUrl

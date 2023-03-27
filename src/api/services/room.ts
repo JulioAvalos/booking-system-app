@@ -17,3 +17,27 @@ export const roomListByName = (searchWord: string, page?: number) => {
         headers: {'Content-Type': 'application/json'},
     });
 };
+
+
+export const createRoom = (formData: any) => {
+    const url = `/api/v1/rooms`;
+    return axios.post(url, formData, {
+        headers: {'Content-Type': 'application/json'},
+    });
+}
+
+
+export const updateRoom = (roomId: number, formData: any) => {
+    const url = `/api/v1/rooms/${roomId}`;
+    return axios.put(url, formData, {
+        headers: {'Content-Type': 'application/json'},
+    });
+}
+
+
+export const getRoomById = (roomId: number) => {
+    const url = `/api/v1/rooms/${roomId}`;
+    return axios.get(url, {
+        headers: {'Content-Type': 'application/json'},
+    });
+}
