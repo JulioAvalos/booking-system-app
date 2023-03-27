@@ -11,50 +11,25 @@ import {
 import {Link as RouterLink, useNavigate} from "react-router-dom";
 import {AiOutlinePlus} from "react-icons/ai";
 import {FaFilter, FaSearch} from "react-icons/all";
-import RoomTable from "./RoomTable";
-
-const levelList = [
-    {
-        id: 1,
-        name: "Nivel 1",
-        buildingId: 1,
-        createdAt: "2023-03-24T07:40:32.761Z",
-        createdBy: "admin",
-        updatedAt: null,
-        updatedBy: null
-    },
-    {
-        id: 2,
-        name: "Nivel 2",
-        buildingId: 1,
-        createdAt: "2023-03-24T07:40:32.761Z",
-        createdBy: "admin",
-        updatedAt: null,
-        updatedBy: null
-    }
-];
-
-const statusList = [
-    {
-        id: 1,
-        name: 'Activo',
-        value: 'active'
-    },
-    {
-        id: 2,
-        name: 'Inactivo',
-        value: 'inactive'
-    },
-    {
-        id: 3,
-        name: 'Ocupado',
-        value: 'busy'
-    },
-]
+import RoomTable from "../../components/RoomTable";
+import {useContext, useEffect} from "react";
+import {AuthContext} from "../../context/AuthContext";
+import {levelList, roomList, statusList} from "../../utils/sampleData";
 
 export default function RoomPage() {
 
     // filtros: buscar por nombre, activos, inactivos, nivel, paginacion,
+    const navigate = useNavigate();
+    const {verifyLogin} = useContext(AuthContext);
+
+    useEffect(() => {
+        const result = verifyLogin();
+        if (!result) {
+            navigate('/login');
+        } else if (result && result.role !== 'ADMIN') {
+            navigate('/login');
+        }
+    }, []);
 
     return (
         <Container sx={{mt: 5}}>
@@ -163,7 +138,7 @@ export default function RoomPage() {
                     />
                 </Grid>
                 <Grid item xs={12}>
-                    <RoomTable/>
+                    <RoomTable list={roomList}/>
                 </Grid>
             </Grid>
         </Container>

@@ -10,47 +10,22 @@ import {
     TablePagination,
     TableRow
 } from "@mui/material";
-import {FaEdit, FaTrashAlt} from "react-icons/all";
+import {FaEdit} from "react-icons/all";
 import {Link as RouterLink} from "react-router-dom";
-
-function createData(
-    name: string,
-    calories: number,
-    fat: number,
-    carbs: number,
-    protein: number,
-) {
-    return {name, calories, fat, carbs, protein};
+interface Room {
+    id: number;
+    name: string;
+    level: string;
+    capacity: number;
+    photoUrl: string;
+    status: string;
 }
 
-const roomList = [
-    {
-        id: 1,
-        name: 'Suchitoto 1',
-        level: 'Primer nivel',
-        capacity: 12,
-        photoUrl: 'https://example.com/suchitoto.jpg',
-        status: 'Inactiva'
-    },
-    {
-        id: 2,
-        name: 'Tazumal 1',
-        level: 'Primer nivel',
-        capacity: 8,
-        photoUrl: 'https://example.com/tazumal.jpg',
-        status: 'Ocupada'
-    },
-    {
-        id: 3,
-        name: 'Joya de Cerén 1',
-        level: 'Primer nivel',
-        capacity: 6,
-        photoUrl: 'https://example.com/joya-de-ceren.jpg',
-        status: 'Activa'
-    }
-];
+interface IRoomTableProps {
+    list: Room[];
+}
 
-export default function RoomTable() {
+export default function RoomTable({list}: IRoomTableProps) {
 
     const handleChangePage = (event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null, page: number) => {
 
@@ -79,7 +54,7 @@ export default function RoomTable() {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {roomList.map((row) => (
+                        {list.map((row) => (
                             <TableRow
                                 key={row.id}
                                 sx={{'&:last-child td, &:last-child th': {border: 0}}}

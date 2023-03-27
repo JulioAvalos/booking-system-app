@@ -28,7 +28,6 @@ function Login() {
         }
     }, [navigate, verifyLogin]);
 
-
     const handleSubmitLogin = async (values: any) => {
         console.log('values: ', values);
         const response = await login(values.username, values.password);
@@ -37,7 +36,6 @@ function Login() {
         } else {
             displayModal('Credenciales incorrectas!');
         }
-
     }
 
     return (

@@ -1,16 +1,37 @@
-import {Button, Container, Grid, IconButton, TextField, Typography, Autocomplete} from "@mui/material";
+import {
+    Button,
+    Container,
+    Grid,
+    IconButton,
+    TextField,
+    Typography,
+    Autocomplete,
+    CircularProgress
+} from "@mui/material";
 import {DatePicker} from '@mui/x-date-pickers/DatePicker';
-import {Link as RouterLink} from "react-router-dom";
+import {Link as RouterLink, useNavigate} from "react-router-dom";
 import {FaArrowLeft} from "react-icons/fa";
 import {Field, Form, Formik} from "formik";
 import * as Yup from 'yup';
 import {TimePicker} from "@mui/x-date-pickers";
+import {useContext, useEffect, useState} from "react";
+import {AuthContext} from "../../context/AuthContext";
+import {levelList, roomList} from "../../utils/sampleData";
 
 const BookingSchemaValidation = Yup.object().shape({
     bookingDate: Yup.date().required('Ingrese la fecha'),
     startTime: Yup.string().required('Ingrese la hora'),
     endTime: Yup.string().required('Ingrese la hora'),
     reason: Yup.string().required('Ingrese el motivo'),
+    level: Yup.object({
+        id: Yup.number(),
+        name: Yup.string(),
+        buildingId: Yup.number(),
+        createdAt: Yup.string().nullable(),
+        createdBy: Yup.string().nullable(),
+        updatedAt: Yup.string().nullable(),
+        updatedBy: Yup.string().nullable(),
+    }).required('Ingrese a que nivel pertenece al sala'),
     room: Yup.object({
         id: Yup.number(),
         name: Yup.string(),
@@ -21,62 +42,25 @@ const BookingSchemaValidation = Yup.object().shape({
     }).required('Ingrese una sala')
 });
 
-const levelList = [
-    {
-        id: 1,
-        name: "Nivel 1",
-        buildingId: 1,
-        createdAt: "2023-03-24T07:40:32.761Z",
-        createdBy: "admin",
-        updatedAt: null,
-        updatedBy: null
-    },
-    {
-        id: 2,
-        name: "Nivel 2",
-        buildingId: 1,
-        createdAt: "2023-03-24T07:40:32.761Z",
-        createdBy: "admin",
-        updatedAt: null,
-        updatedBy: null
-    }
-]
-
-const roomList = [
-    {
-        id: 1,
-        name: 'Suchitoto 1',
-        level: 'Primer nivel',
-        capacity: 12,
-        photoUrl: 'https://example.com/suchitoto.jpg',
-        status: 'Available'
-    },
-    {
-        id: 2,
-        name: 'Tazumal 1',
-        level: 'Primer nivel',
-        capacity: 8,
-        photoUrl: 'https://example.com/tazumal.jpg',
-        status: 'Available'
-    },
-    {
-        id: 3,
-        name: 'Joya de Cerén 1',
-        level: 'Primer nivel',
-        capacity: 6,
-        photoUrl: 'https://example.com/joya-de-ceren.jpg',
-        status: 'Available'
-    }
-];
-
 export default function BookingRoom() {
+
+    const navigate = useNavigate();
+    const {verifyLogin, displayModal} = useContext(AuthContext);
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        const result = verifyLogin();
+        if (!result) {
+            navigate('/login');
+        }
+    }, []);
 
     const lookUpRoomsByLevel = (level: any) => {
         console.log('level', level);
     }
 
     const handleSubmit = (values: any) => {
-
+        setLoading(true);
         const {room, ...rest} = values;
 
         const formData = {
@@ -85,7 +69,14 @@ export default function BookingRoom() {
             userId: 1,
         }
 
-        console.log(formData);
+        console.log('submit',formData);
+
+        setTimeout(() => {
+            displayModal('Se ha creado la reserva de sala');
+            setLoading(false);
+            navigate('/booking');
+        }, 2000);
+
     }
 
     return (
@@ -133,6 +124,7 @@ export default function BookingRoom() {
                       setFieldValue
                   }) => {
                     console.log(errors)
+                    console.log(values);
                     return (
                         <Form>
                             <Grid container sx={{mt: 2}} spacing={3}>
@@ -312,6 +304,8 @@ export default function BookingRoom() {
                                         variant="contained"
                                         color="secondary"
                                         sx={{fontWeight: 600}}
+                                        disabled={loading}
+                                        startIcon={loading ? <CircularProgress color="primary" size={15}/> : ''}
                                     >
                                         Reservar
                                     </Button>

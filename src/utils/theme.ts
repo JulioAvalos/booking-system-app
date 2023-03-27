@@ -22,6 +22,18 @@ export const themeOptions: ThemeOptions = {
 
 export const theme: Theme = createTheme({
     ...themeOptions,
+    components: {
+        MuiIconButton: {
+            styleOverrides: {
+                colorSecondary: {
+                    backgroundColor: '#FFC600',
+                    '&:hover': {
+                        backgroundColor: '#FFC600'
+                    }
+                }
+            }
+        }
+    }
 });
 
 export default theme;

@@ -1,73 +1,89 @@
 import {Link as RouterLink, useNavigate, useParams} from "react-router-dom";
-import {Autocomplete, Button, Container, Grid, IconButton, TextField, Typography} from "@mui/material";
+import {
+    Autocomplete,
+    Button,
+    CircularProgress,
+    Container,
+    Grid,
+    IconButton,
+    TextField,
+    Typography
+} from "@mui/material";
 import {FaArrowLeft} from "react-icons/fa";
 import {Field, Form, Formik} from "formik";
 import * as Yup from "yup";
-import {useEffect} from "react";
-
-const statusList = [
-    {
-        id: 1,
-        name: 'Activo',
-        value: 'active'
-    },
-    {
-        id: 2,
-        name: 'Inactivo',
-        value: 'inactive'
-    },
-    {
-        id: 3,
-        name: 'Ocupado',
-        value: 'busy'
-    },
-]
-
-const levelList = [
-    {
-        id: 1,
-        name: "Nivel 1",
-        buildingId: 1,
-        createdAt: "2023-03-24T07:40:32.761Z",
-        createdBy: "admin",
-        updatedAt: null,
-        updatedBy: null
-    },
-    {
-        id: 2,
-        name: "Nivel 2",
-        buildingId: 1,
-        createdAt: "2023-03-24T07:40:32.761Z",
-        createdBy: "admin",
-        updatedAt: null,
-        updatedBy: null
-    }
-]
+import {useContext, useEffect, useState} from "react";
+import {AuthContext} from "../../context/AuthContext";
+import {levelList, statusList, updateRoomSample} from "../../utils/sampleData";
+import {IRoomForm, Level} from "../../interfaces";
 
 const RoomFormSchemaValidation = Yup.object().shape({
     name: Yup.string().required('Ingrese el nombre'),
     capacity: Yup.number().min(1, 'La capacidad minima es de 1').required('Ingrese la capacidad de la sala'),
-    status: Yup.string().required('Ingrese el estado de la sala'),
-    level: Yup.object().required('Ingrese a que nivel pertenece al sala'),
+    status: Yup.object({
+        id: Yup.number(),
+        name: Yup.string(),
+        value: Yup.string()
+    }).required('Ingrese el estado de la sala'),
+    level: Yup.object({
+        id: Yup.number(),
+        name: Yup.string(),
+        buildingId: Yup.number(),
+        createdAt: Yup.string().nullable(),
+        createdBy: Yup.string().nullable(),
+        updatedAt: Yup.string().nullable(),
+        updatedBy: Yup.string().nullable(),
+    }).required('Ingrese a que nivel pertenece al sala'),
     photoUrl: Yup.string()
 });
 
+const initialValues = {
+    name: '',
+    capacity: 1,
+    status: {"id": 1, "name": "Activo", "value": "active"},
+    level: {} as Level,
+    photoUrl: ''
+}
+
 export default function RoomForm() {
 
-    const navigate = useNavigate();
     const {id} = useParams();
+    const navigate = useNavigate();
+    const {verifyLogin, displayModal} = useContext(AuthContext);
+    const [loading, setLoading] = useState(false);
+    const [roomDetail, setRoomDetail] = useState(initialValues);
+
+    useEffect(() => {
+        const result = verifyLogin();
+        if (!result) {
+            navigate('/login');
+        } else if (result && result.role !== 'ADMIN') {
+            navigate('/login');
+        }
+    }, []);
 
     useEffect(() => {
         console.log('id', id);
-    }, []);
+        if (id) {
+            setRoomDetail(updateRoomSample);
+        }
+    }, [id]);
 
     const handleSubmit = (values: any) => {
+        setLoading(true);
         console.log('submit', values);
-        if (id) {
-            //todo: update
-        } else {
-            //todo: create
-        }
+        console.log(JSON.stringify(values));
+        setTimeout(() => {
+            if (id) {
+                //todo: update
+                displayModal('Se ha actualizado la sala');
+            } else {
+                //todo: create
+                navigate('/room');
+                displayModal('Se ha creado la sala');
+            }
+            setLoading(false);
+        }, 2000);
     }
 
     return (
@@ -95,11 +111,11 @@ export default function RoomForm() {
             </Grid>
             <Formik
                 initialValues={{
-                    name: '',
-                    capacity: 1,
-                    status: 'active',
-                    levelId: null,
-                    photoUrl: ''
+                    name: roomDetail.name || '',
+                    capacity: roomDetail.capacity || 1,
+                    status: roomDetail.status || '',
+                    level: roomDetail.level || '',
+                    photoUrl: roomDetail.photoUrl || ''
                 }}
                 enableReinitialize
                 validationSchema={RoomFormSchemaValidation}
@@ -114,6 +130,8 @@ export default function RoomForm() {
                       touched,
                       setFieldValue
                   }) => {
+                    console.log(values.level);
+                    console.log(errors);
                     return (
                         <Form>
                             <Grid container spacing={2} sx={{mt: 2}}>
@@ -124,6 +142,7 @@ export default function RoomForm() {
                                         id="name"
                                         name="name"
                                         variant="outlined"
+                                        value={values.name}
                                         error={errors.name && touched.name}
                                         helperText={
                                             errors.name && touched.name
@@ -146,6 +165,7 @@ export default function RoomForm() {
                                         name="capacity"
                                         variant="outlined"
                                         type="number"
+                                        value={values.capacity}
                                         inputProps={{
                                             min: 0,
                                             inputMode: 'numeric',
@@ -171,8 +191,9 @@ export default function RoomForm() {
                                         onChange={(event, value) => {
                                             setFieldValue('level', value);
                                         }}
+                                        value={values.level}
                                         isOptionEqualToValue={(option, value) => option.id === value.id}
-                                        getOptionLabel={(option) => option.name}
+                                        getOptionLabel={(option) => option.name || ''}
                                         renderInput={(params) => {
                                             return (
                                                 <TextField
@@ -182,6 +203,11 @@ export default function RoomForm() {
                                                     id="level"
                                                     name="level"
                                                     variant="outlined"
+                                                    error={Boolean(errors.level && touched.level)}
+                                                    helperText={
+                                                        errors.level as string && touched.level as string
+                                                            ? errors.level as string : ''
+                                                    }
                                                     InputLabelProps={{
                                                         shrink: true,
                                                     }}
@@ -196,8 +222,9 @@ export default function RoomForm() {
                                         onChange={(event, value) => {
                                             setFieldValue('status', value);
                                         }}
+                                        value={values.status}
                                         isOptionEqualToValue={(option, value) => option.id === value.id}
-                                        getOptionLabel={(option) => option.name}
+                                        getOptionLabel={(option) => option.name || ''}
                                         renderInput={(params) => {
                                             return (
                                                 <TextField
@@ -207,6 +234,11 @@ export default function RoomForm() {
                                                     id="status"
                                                     name="status"
                                                     variant="outlined"
+                                                    error={Boolean(errors.status && touched.status)}
+                                                    helperText={
+                                                        errors.status as string && touched.status as string
+                                                            ? errors.status as string : ''
+                                                    }
                                                     InputLabelProps={{
                                                         shrink: true,
                                                     }}
@@ -218,7 +250,7 @@ export default function RoomForm() {
                                 <Grid item xs={6}>
                                     <Field
                                         fullWidth
-                                        label="Foto de sala"
+                                        label="Foto de sala (Opcional)"
                                         id="photoUrl"
                                         name="photoUrl"
                                         variant="outlined"
@@ -243,6 +275,8 @@ export default function RoomForm() {
                                         variant="contained"
                                         color="secondary"
                                         sx={{fontWeight: 600}}
+                                        disabled={loading}
+                                        startIcon={loading ? <CircularProgress color="primary" size={15}/> : ''}
                                     >
                                         {id ? 'Actualizar' : 'Crear'}
                                     </Button>

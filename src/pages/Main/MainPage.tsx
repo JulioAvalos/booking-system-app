@@ -1,64 +1,22 @@
 import {Button, Container, Grid, Typography} from "@mui/material";
-import {useContext, useEffect, useState} from "react";
+import {useContext, useEffect} from "react";
 import {Link as RouterLink, useNavigate} from "react-router-dom";
-import {AuthContext} from "../context/AuthContext";
-import {Loading} from "../components/layout/Loading";
+import {AuthContext} from "../../context/AuthContext";
 import {map} from 'lodash';
-import BookingList from "../components/BookingList";
-
-const list = [
-    {
-        dayMonth: '4 / Mayo',
-        startTime: '8:30am',
-        endTime: '12:00pm',
-        roomName: 'Tunco',
-        status: 'active',
-    },
-    {
-        dayMonth: '5 / Mayo',
-        startTime: '8:30am',
-        endTime: '12:00pm',
-        roomName: 'Basilisco',
-        status: 'inactive',
-    },
-    {
-        dayMonth: '6 / Mayo',
-        startTime: '8:30am',
-        endTime: '12:00pm',
-        roomName: 'Ilobasco',
-        status: 'active',
-    },
-
-    {
-        dayMonth: '7 / Mayo',
-        startTime: '8:30am',
-        endTime: '12:00pm',
-        roomName: 'Ilobasco',
-        status: 'inactive',
-    }
-]
+import BookingList from "../../components/BookingList";
+import {bookingList} from "../../utils/sampleData";
 
 export default function MainPage() {
 
     const navigate = useNavigate();
     const {verifyLogin} = useContext(AuthContext);
 
-    const [loading, setLoading] = useState(true);
-
     useEffect(() => {
         const result = verifyLogin();
-        setTimeout(() => {
-            if (!result) {
-                navigate('/login');
-            }
-            setLoading(false);
-        }, 2000);
-
+        if (!result) {
+            navigate('/login');
+        }
     }, []);
-
-    if (loading) {
-        return <Loading/>
-    }
 
     return (
         <Container>
@@ -98,7 +56,7 @@ export default function MainPage() {
                     </Typography>
                 </Grid>
                 <Grid item xs={12}>
-                    {map(list, ({dayMonth, startTime, endTime, roomName, status}, index) => {
+                    {map(bookingList, ({dayMonth, startTime, endTime, roomName, status}, index) => {
                         return (
                             <BookingList
                                 key={`booking-list-${index}`}
