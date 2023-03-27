@@ -32,3 +32,26 @@ export function getParsedJwt<T extends object = { [k: string]: string | number }
         return undefined
     }
 }
+
+export const parseDateTimeToStringTime = (dateToFormat: any) => {
+    if (dateToFormat) {
+        const orderDateTime = new Date(dateToFormat);
+        const orderTime = orderDateTime.toLocaleString('en-US', {
+            hour: 'numeric',
+            minute: 'numeric',
+            hour12: true,
+        });
+
+        return orderTime;
+    } else return '';
+};
+
+export const parseDateToString = (givenDate: any) => {
+    const dateToParse = new Date(givenDate);
+    let result = '';
+    const dd = String(dateToParse.getDate()).padStart(2, '0');
+    const mm = String(dateToParse.getMonth() + 1).padStart(2, '0');
+    const yyyy = dateToParse.getFullYear();
+    result = dd + '/' + mm + '/' + yyyy;
+    return result;
+};

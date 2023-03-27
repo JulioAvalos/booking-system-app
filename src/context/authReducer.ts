@@ -4,7 +4,6 @@ export enum Actions {
     MODAL_UPDATE = '[Modal] - Update State'
 }
 
-
 type AuthActionType =
     | { type: Actions.AUTH_LOGIN, payload: any }
     | { type: Actions.AUTH_LOGOUT }

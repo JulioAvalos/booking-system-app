@@ -1,7 +1,7 @@
 import {ReactNode, useReducer} from "react";
-import {AuthContext, IUserToken} from "./AuthContext";
+import {AuthContext} from "./AuthContext";
 import {Actions, authReducer} from "./authReducer";
-import {getParsedJwt, randomColorAvatar} from "../utils/util";
+import {getParsedJwt} from "../utils/util";
 import {loginUser} from "../api/services/login";
 
 export interface IProps {
@@ -20,7 +20,7 @@ export const AuthProvider = ({children}: IProps) => {
         try {
             const resp = await loginUser(email, password);
             const token = getParsedJwt(resp.data.data);
-            localStorage.setItem('access_token', JSON.stringify(token));
+            localStorage.setItem('access_token', resp.data.data);
             dispatch({type: Actions.AUTH_LOGIN, payload: {...token}});
             return true;
         } catch (err) {

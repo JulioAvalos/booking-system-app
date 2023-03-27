@@ -1,6 +1,6 @@
 import {
     Grid,
-    IconButton,
+    IconButton, Pagination,
     Paper,
     Table,
     TableBody,
@@ -12,10 +12,11 @@ import {
 } from "@mui/material";
 import {FaEdit} from "react-icons/all";
 import {Link as RouterLink} from "react-router-dom";
+
 interface Room {
-    id: number;
+    roomId: number;
     name: string;
-    level: string;
+    levelName: string;
     capacity: number;
     photoUrl: string;
     status: string;
@@ -23,21 +24,13 @@ interface Room {
 
 interface IRoomTableProps {
     list: Room[];
+    pagination: any;
+    loading: boolean;
+    handleChangePage: (event: any, value: number) => void;
+    page: number;
 }
 
-export default function RoomTable({list}: IRoomTableProps) {
-
-    const handleChangePage = (event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null, page: number) => {
-
-    }
-
-    const rowsPerPage = () => {
-
-    }
-
-    const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
-
-    }
+export default function RoomTable({list, pagination, loading, handleChangePage, page}: IRoomTableProps) {
 
     return (
         <>
@@ -56,14 +49,14 @@ export default function RoomTable({list}: IRoomTableProps) {
                     <TableBody>
                         {list.map((row) => (
                             <TableRow
-                                key={row.id}
+                                key={row.roomId}
                                 sx={{'&:last-child td, &:last-child th': {border: 0}}}
                             >
                                 <TableCell component="th" scope="row">
-                                    {row.id}
+                                    {row.roomId}
                                 </TableCell>
                                 <TableCell align="right">{row.name}</TableCell>
-                                <TableCell align="right">{row.level}</TableCell>
+                                <TableCell align="right">{row.levelName}</TableCell>
                                 <TableCell align="right">{row.capacity}</TableCell>
                                 <TableCell align="right">{row.status}</TableCell>
                                 <TableCell align="right">
@@ -72,7 +65,7 @@ export default function RoomTable({list}: IRoomTableProps) {
                                             <IconButton
                                                 size="small"
                                                 component={RouterLink}
-                                                to={`/room/${row.id}`}
+                                                to={`/room/${row.roomId}`}
                                             >
                                                 <FaEdit color="#01426A"/>
                                             </IconButton>
@@ -84,20 +77,19 @@ export default function RoomTable({list}: IRoomTableProps) {
                     </TableBody>
                 </Table>
             </TableContainer>
-            <TablePagination
-                component="div"
-                count={100}
-                page={1}
-                onPageChange={handleChangePage}
-                rowsPerPage={10}
-                onRowsPerPageChange={handleChangeRowsPerPage}
-                labelRowsPerPage="Filas por página"
-                labelDisplayedRows={
-                    ({from, to, count}) => {
-                        return '' + from + '-' + to + ' de ' + count
-                    }
-                }
-            />
+            <Grid container justifyContent="center" alignItems="center" sx={{mt: 2}}>
+                <Grid item>
+                    <Pagination
+                        size="small"
+                        count={pagination ? pagination.totalPages : 0}
+                        onChange={handleChangePage}
+                        page={page}
+                        showFirstButton
+                        showLastButton
+                        disabled={loading}
+                    />
+                </Grid>
+            </Grid>
         </>
 
     );

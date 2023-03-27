@@ -112,3 +112,25 @@ export const updateRoomSample = {
     },
     "photoUrl": ""
 }
+
+export const bookingHistory = {
+    "statusCode": 200,
+    "message": "OK",
+    "data": {
+        "items": [
+            {
+                "reservationId": 1,
+                "userId": 1,
+                "roomId": 1,
+                "startTime": "2023-03-25T16:00:00.000Z",
+                "endTime": "2023-03-25T18:00:00.000Z",
+                "reservationDate": "2023-03-25",
+                "reason": "Reunión de equipo",
+                "attendees": 6,
+                "recurring": false,
+                "status": "APPROVED",
+                "reservationUsers": []
+            }
+        ]
+    }
+}

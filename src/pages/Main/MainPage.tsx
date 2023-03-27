@@ -1,15 +1,20 @@
 import {Button, Container, Grid, Typography} from "@mui/material";
-import {useContext, useEffect} from "react";
+import {useContext, useEffect, useState} from "react";
 import {Link as RouterLink, useNavigate} from "react-router-dom";
 import {AuthContext} from "../../context/AuthContext";
 import {map} from 'lodash';
 import BookingList from "../../components/BookingList";
 import {bookingList} from "../../utils/sampleData";
+import {bookingHistory} from "../../api/services/booking";
+import {Loading} from "../../components/layout/Loading";
 
 export default function MainPage() {
 
     const navigate = useNavigate();
-    const {verifyLogin} = useContext(AuthContext);
+    const {verifyLogin, user} = useContext(AuthContext);
+
+    const [loading, setLoading] = useState(true);
+    const [reservationList, setReservationList] = useState([]);
 
     useEffect(() => {
         const result = verifyLogin();
@@ -17,6 +22,22 @@ export default function MainPage() {
             navigate('/login');
         }
     }, []);
+
+    useEffect(() => {
+        if (user) {
+            getBookingHistory();
+        }
+    }, [user]);
+
+    const getBookingHistory = async () => {
+        const resp = await bookingHistory(user.id);
+        setReservationList(resp.data.data.items);
+        setLoading(false);
+    }
+
+    if (loading) {
+        return <Loading/>
+    }
 
     return (
         <Container>
@@ -56,11 +77,11 @@ export default function MainPage() {
                     </Typography>
                 </Grid>
                 <Grid item xs={12}>
-                    {map(bookingList, ({dayMonth, startTime, endTime, roomName, status}, index) => {
+                    {map(reservationList, ({reservationDate, startTime, endTime, roomName, status}, index) => {
                         return (
                             <BookingList
                                 key={`booking-list-${index}`}
-                                dayMonth={dayMonth}
+                                dayMonth={reservationDate}
                                 startTime={startTime}
                                 endTime={endTime}
                                 roomName={roomName}

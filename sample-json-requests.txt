@@ -17,3 +17,6 @@
         "Error in param request 3"
     ]
 }
+
+
+docker run --name postgres_local -p 5432:5432 -e POSTGRES_USER=booking-admin-user -e POSTGRES_PASSWORD=kGiV0r5NBoy4XcAtu_xcWQ -e POSTGRES_DB=booking_db -d postgres

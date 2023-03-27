@@ -26,7 +26,7 @@ function Login() {
         if (isLogged) {
             navigate('/booking');
         }
-    }, [navigate, verifyLogin]);
+    }, []);
 
     const handleSubmitLogin = async (values: any) => {
         console.log('values: ', values);
